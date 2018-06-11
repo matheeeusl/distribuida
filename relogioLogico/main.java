@@ -2,7 +2,7 @@ package relogioLogico;
 
 public class main {
 	public static void main(String[] args) {
-		new RelogioLogico(10);
+		new RelogioLogico(2);
 	}
 
 }
