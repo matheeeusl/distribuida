@@ -7,19 +7,17 @@ public class BaseadoEmPermissao {
 	
 	static boolean token;
    
-    //fila de itens
-    static LinkedList<MeuProcesso> processos = new LinkedList<MeuProcesso>();
+    //fila de processos
+    static LinkedList<Processo> processos = new LinkedList<Processo>();
     
-    static Queue<MeuProcesso> processoEsperandoAcesso = new LinkedList<MeuProcesso>();
+    static Queue<Processo> processoEsperandoAcesso = new LinkedList<Processo>();
     
-    //construtor
-    /**********************************************************/
     BaseadoEmPermissao(int size) { 
     	token = true;
-    	//pıe os processo na fila
+    	//p√µe os processo na fila
         for (int i = 0; i < size; i++) {
         	//cria o processo
-            MeuProcesso processo = new MeuProcesso(i);
+            Processo processo = new Processo(i);
             //inicia o processo
             processo.start();
             //adiciona o processo na fila
@@ -28,96 +26,86 @@ public class BaseadoEmPermissao {
   	
     }  
     
-    //requisiÁ„o de acesso a regi„o critica
-    static void requestAccessCritialArea(MeuProcesso n) {
+    //requisi√ß√£o de acesso a regi√£o critica
+    static void requestAccessCritialArea(Processo n) {
     	//concede o acesso se a fila estiver vazia
     	if(processoEsperandoAcesso.isEmpty() && token) {
     		token = false;
-    		n.conceedAccessCritialArea(token);
+    		n.concedeAcessoRegiaoCritica(token);
     	} else {
-    		//adiciona o nodo a fila caso n„o esteja com o token
+    		//adiciona o processo a fila caso n√£o esteja com o token
     		processoEsperandoAcesso.add(n);
     	}
     }
     
-    //devoluÁ„o do token pelo processo
-    /**********************************************************/
-    static void backToken(boolean t) {
+    //devolu√ß√£o do token pelo processo
+    static void devolveToken(boolean t) {
     	//recebe o token
     	token = t;
-    	//verifica se tem nodos na fila
+    	//verifica se tem processos na fila
     	if(!processoEsperandoAcesso.isEmpty()) {
-    		///pega o proximo nodo da fila
-    		MeuProcesso next = processoEsperandoAcesso.poll();
-    		//concede o token para este nodo
-    		next.conceedAccessCritialArea(token);
+    		///pega o proximo processo da fila
+    		Processo next = processoEsperandoAcesso.poll();
+    		//concede o token para este processo
+    		next.concedeAcessoRegiaoCritica(token);
+    	}else {
+    		System.out.println("Todos processos ociosos acessaram a regi√£o cr√≠tica");
+    		System.exit(0);
     	}
     }
     
-    //representaÁ„o da regi„o crÌtica
-    /**********************************************************/
-    static void criticalArea() throws Exception {
-    	Thread.sleep(5000);
+    //representa√ß√£o da regi√£o cr√≠tica
+    static void regiaoCritica() throws Exception {
+    	System.out.println("Regi√£o cr√≠tica acessada");
+    	Thread.sleep(3500);
     }
     
-    /**
-     *     Processo que vai na fila
-     *
-     */
-    
-    /**********************************************************/
-    static class MeuProcesso extends Thread {
+    static class Processo extends Thread {
 
     	boolean token;
         int index;
-        boolean isAccessRequested;
+        boolean acessoRequisitado;
    
         //construtor
-        /**********************************************************/
-        MeuProcesso(int i) {
+        Processo(int i) {
             this.index = i;
             this.token = false;
-            this.isAccessRequested = false;
-            System.out.println("[Nodo " + this.index + "] iniciado");
+            this.acessoRequisitado = false;
+            System.out.println("Processo " + this.index + " iniciado");
         }
 
-        //tentativa de acesso a regi„o crÌtica
-        /**********************************************************/
-        private void requestAccessCritialArea() throws Exception {
-        	this.isAccessRequested = true;
-        	System.out.println("[Nodo " + this.index + "] Requisitando acesso a RC");
+        //tentativa de acesso a regi√£o cr√≠tica
+        private void requisitarAcessoRC() throws Exception {
+        	this.acessoRequisitado = true;
+        	System.out.println("Processo " + this.index + " ==> Requisitando acesso a RC");
         	BaseadoEmPermissao.requestAccessCritialArea(this);
         }
         
-        //permiss„o de acesso a regi„o crÌtica
-        /**********************************************************/
-        public void conceedAccessCritialArea(boolean token) {
+        //permiss√£o de acesso a regi√£o cr√≠tica
+        public void concedeAcessoRegiaoCritica(boolean token) {
         	this.token = token; 
-        	System.out.println("[Nodo " + this.index + "] Acesso concedido a RC");
+        	System.out.println("Processo " + this.index + " ==> Acesso concedido a RC");
         	//acessa a RC
         	try {
-        		BaseadoEmPermissao.criticalArea();
+        		BaseadoEmPermissao.regiaoCritica();
         	} catch (Exception e) {
-        		System.err.println("[Nodo " + this.index + "] Erro na execuÁ„o");
+        		System.err.println("Processo " + this.index + " ==> Erro na execu√ß√£o");
         	}
     		//devolve o token
-    		System.out.println("[Nodo " + this.index + "] devolvendo token");
-    		BaseadoEmPermissao.backToken(this.token);
+    		System.out.println("Processo " + this.index + " ==> devolvendo token");
+    		BaseadoEmPermissao.devolveToken(this.token);
         }
         
-        //inicia o processo
-        /**********************************************************/
+        //inicia a classe
         public void run() {
         	try {
         		this.sleep(1000);
-        		
         		//requisita o acesso a RC caso ainda nao tenha requisitado
-        		if(!isAccessRequested) this.requestAccessCritialArea();
+        		if(!acessoRequisitado) this.requisitarAcessoRC();
         		
         	} catch (Exception e) {
-        		System.err.println( "[Nodo " + this.index + "]Erro na execuÁ„o");
+        		System.err.println( "Processo " + this.index + " ==> Erro na execu√ß√£o");
         	}
         }
     }
-
 }
