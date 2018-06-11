@@ -7,7 +7,7 @@ import java.util.Random;
 public class RelogioLogico {
 	public RelogioLogico(int n) {
 		int porta = 5001;
-		String host = "127.0.0.1";
+		String host = "224.0.0.12";
 		Random rand = new Random();
 		ArrayList<Processo> processos = new ArrayList<Processo>();
 		

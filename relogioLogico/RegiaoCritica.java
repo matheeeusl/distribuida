@@ -15,10 +15,10 @@ public class RegiaoCritica implements Runnable {
   @Override
   public void run () {
     try {
-      System.out.println(System.currentTimeMillis() + " Entrando regiao critica - PID - " + this.id  + " - I - " + RegiaoCritica.i);
+      System.out.println(System.currentTimeMillis() + " Processo acessando região critica : IdProcesso" + this.id  + " - I - " + RegiaoCritica.i);
       Thread.sleep(seconds * 1000);
       RegiaoCritica.i++;
-      System.out.println(System.currentTimeMillis() + " Saindo PID - " + this.id + " - I - " + RegiaoCritica.i);
+      System.out.println(System.currentTimeMillis() + " Processo saindo região critica : IdProcesso " + this.id + " - I - " + RegiaoCritica.i);
       this.owner.sairRegiaoCritica();
     } catch (Exception ex) {
       ex.printStackTrace();
